@@ -1,5 +1,12 @@
 # Forge 3.2
 
+> **Patched copy.** This repository is a copy of
+> [JusDeFruis/Forge-3.2](https://github.com/JusDeFruis/Forge-3.2) with the
+> CVE-2026-109869 fix applied (3.2.2). Upstream's 3.2 / 3.2.1 binaries bundle
+> undici 8.11.2 and a Node runtime below 24.22.1 and can be crashed by any
+> endpoint they fetch from; the `v3.2.2` release here is the patched build.
+> Nothing else was changed apart from the security patch and its docs.
+
 Forge 3.2 is a desktop prompt workshop presented as a focused chat application.
 Describe a goal, receive a complete ready-to-run system prompt, then keep revising
 the same draft through normal conversation.
