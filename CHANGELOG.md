@@ -1,5 +1,22 @@
 # Changelog
 
+## Forge 3.2.2
+
+- **Security: CVE-2026-109869, remote denial of service.** A server Forge
+  fetches from — a custom provider, a compromised provider, or a redirect
+  target — could send a response with more than five content codings and close
+  the connection before the body. undici rejected the response but had already
+  created the internal stream, and the early close surfaced as an unhandled
+  `error` that terminated the process. One response, no authentication, no
+  workaround: any in-flight draft was lost with the window.
+  The fix is on both HTTP layers, because Forge uses the runtime's `fetch`:
+  the bundled `undici` moves to 8.12.2+ (8.12.3 in the lock) and the packer
+  must run on Node 24.22.1+, whose internal undici is 7.30.1. `engines`,
+  `.npmrc` (`engine-strict`), both launchers and both workflows now enforce
+  that floor, and a release test fails the build if either layer regresses.
+  3.2 and 3.2.1 binaries are affected. Availability only — no code execution
+  and no data exposure.
+
 ## Forge 3.2.1
 
 - **Five more providers.** DeepInfra, Nebius Token Factory, SiliconFlow, Zhipu

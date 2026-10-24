@@ -1,6 +1,6 @@
 {
   "name": "forge",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "private": true,
   "description": "Forge 3.2 desktop prompt workshop — TypeScript edition",
   "type": "module",
@@ -15,11 +15,11 @@
     "pack:bin": "node packaging/sea/pack.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24.22.1"
   },
   "dependencies": {
     "@webviewjs/webview": "^0.4.7",
-    "undici": "^8.11.2"
+    "undici": "^8.12.3"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

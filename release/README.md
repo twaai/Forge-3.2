@@ -9,8 +9,9 @@ visible in the repository and its purpose is documented here.
 
 ## Build it yourself
 
-Packaging needs Node 24 or newer (the packer says so up front instead of
-failing late). Then:
+Packaging needs Node 24.22.1 or newer (the packer says so up front instead of
+failing late). 24.22.1 is a security floor, not a style choice: it is the Node
+release whose internal undici carries the CVE-2026-109869 fix. Then:
 
 ```bash
 npm install
@@ -26,17 +27,22 @@ npm run pack:exe
 
 The Windows build embeds the Node runtime, the web shell and the WebView2
 native library, so it runs on any Windows x64 machine without a Node.js
-install. The packer stamps the `forge.ico` icon and the `3.2.1` version
+install. The packer stamps the `forge.ico` icon and the `3.2.2` version
 resources before injecting the payload. Windows SmartScreen asks for
 "More info" then "Run anyway" on unsigned builds.
+
+Every binary built by `v3.2.2` fixes CVE-2026-109869 in both HTTP layers: the
+bundled undici is >= 8.12.2 and the embedded Node is >= 24.22.1 (internal
+undici 7.30.1). A 3.2 / 3.2.1 binary has neither and can be crashed by any
+endpoint it fetches from.
 
 ## Publishing a binary
 
 Attach the built file to a GitHub Release rather than committing it:
 
 ```bash
-gh release create v3.2.1 release/Forge-3.2-windows-x64.exe \
-  --title "Forge 3.2.1" --notes "See CHANGELOG.md"
+gh release create v3.2.2 release/Forge-3.2-windows-x64.exe \
+  --title "Forge 3.2.2" --notes "See CHANGELOG.md"
 ```
 
 Four single-file artifacts, one per platform, all built natively on GitHub

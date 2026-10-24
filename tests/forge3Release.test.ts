@@ -63,7 +63,8 @@ test('distribution uses only forge branding', () => {
 test('windows launcher bootstraps or downloads', () => {
   const launcher = read_source('forge.bat');
   assert.ok(launcher.includes('where node.exe'));
-  assert.ok(launcher.includes('LSS 20'));
+  assert.ok(launcher.includes('LSS 242201'));
+  assert.ok(launcher.includes('24.22.1'));
   assert.ok(launcher.includes('npm install'));
   assert.ok(launcher.includes('npm run build'));
   assert.ok(launcher.includes('dist\\main.js'));
@@ -174,5 +175,36 @@ test('the shipped window and the shell stay console-free', () => {
     assert.strictEqual(subsystem.readUInt16LE(0), 2, 'release exe must be GUI subsystem');
   } finally {
     fs.closeSync(handle);
+  }
+});
+
+test('the http stack carries the CVE-2026-109869 fix', () => {
+  /* The advisory is availability-only but it needs two upgrades, not one:
+     Forge's requests go through the runtime's global fetch, so bumping the
+     npm package alone would still ship a binary that dies on a crafted
+     response. The floor is undici 8.12.2 bundled and Node 24.22.1 embedded
+     (internal undici 7.30.1). */
+  const version_of = (raw: unknown): number[] => {
+    const match = String(raw).match(/(\d+)\.(\d+)\.(\d+)/);
+    assert.ok(match, `no full version in "${String(raw)}"`);
+    return match.slice(1, 4).map(Number);
+  };
+  const at_least = (found: number[], floor: number[]): boolean => {
+    for (let index = 0; index < floor.length; index += 1) {
+      if (found[index] !== floor[index]) return found[index] > floor[index];
+    }
+    return true;
+  };
+  const pkg = JSON.parse(read_source('package.json'));
+  const bundled = version_of(pkg['dependencies']['undici']);
+  assert.ok(at_least(bundled, [8, 12, 2]), `package.json allows undici ${bundled.join('.')}`);
+  const lock = JSON.parse(read_source('package-lock.json'));
+  const locked = version_of(lock['packages']['node_modules/undici']['version']);
+  assert.ok(at_least(locked, [8, 12, 2]), `the lock resolves undici ${locked.join('.')}`);
+  for (const workflow of ['ci.yml', 'release.yml']) {
+    const pinned = /node-version:\s*['"]?([0-9][^'"\s]*)/.exec(read_source('.github', 'workflows', workflow));
+    assert.ok(pinned, `${workflow} pins no node-version`);
+    const runtime = version_of(pinned[1]);
+    assert.ok(at_least(runtime, [24, 22, 1]), `${workflow} builds on Node ${runtime.join('.')}`);
   }
 });

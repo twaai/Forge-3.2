@@ -26,6 +26,11 @@ Prebuilt binaries are not committed to the repository — build them locally:
 The single-file release artifact is `Forge-3.2-windows-x64.exe`. Other
 platforms run from source with `npm run build && node dist/main.js`.
 
+3.2.2 is the security build: 3.2 and 3.2.1 bundle undici 8.11.2 and a Node
+runtime below 24.22.1, which let an endpoint Forge talks to kill the process
+with one malformed response (CVE-2026-109869, availability only). 3.2.2 ships
+undici >= 8.12.2 and must be built on Node >= 24.22.1.
+
 ## What changed in 3.2
 
 - OpenCode Zen is a gateway now, offering the usable part of its free tier: the
@@ -190,7 +195,7 @@ machine without going anywhere.
 ## Run from source
 
 The desktop window, the chat runtime, and the prompt engine are written in
-TypeScript and run on Node.js 20 or newer. No Python installation is involved.
+TypeScript and run on Node.js 24.22.1 or newer. No Python installation is involved.
 
 For a source checkout, `forge.bat` installs the Node dependencies and builds the
 app on its first run, then starts the native window:
